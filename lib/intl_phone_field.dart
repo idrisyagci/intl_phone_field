@@ -232,6 +232,8 @@ class IntlPhoneField extends StatefulWidget {
   /// If unset, defaults to [EdgeInsets.zero].
   final EdgeInsets flagsButtonMargin;
 
+  final String? hintText;
+
   IntlPhoneField({
     Key? key,
     this.initialCountryCode,
@@ -264,6 +266,7 @@ class IntlPhoneField extends StatefulWidget {
     this.dropdownIcon = const Icon(Icons.arrow_drop_down),
     this.autofocus = false,
     this.textInputAction,
+    this.hintText,
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.showCountryFlag = true,
     this.cursorColor,
@@ -373,6 +376,8 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
       showCursor: widget.showCursor,
       onFieldSubmitted: widget.onSubmitted,
       decoration: widget.decoration.copyWith(
+        hintText: widget.hintText,
+        hintStyle: widget.style,
         prefixIcon: _buildFlagsButton(),
         counterText: !widget.enabled ? '' : null,
       ),
