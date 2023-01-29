@@ -124,12 +124,7 @@ class IntlPhoneField extends StatefulWidget {
   /// This property can be used to pre-fill the field.
   final String? initialValue;
 
-  /// 2 letter ISO Code or country dial code.
-  ///
-  /// ```dart
-  /// initialCountryCode: 'IN', // India
-  /// initialCountryCode: '+225', // Côte d'Ivoire
-  /// ```
+  /// 2 Letter ISO Code
   final String? initialCountryCode;
 
   /// List of 2 Letter ISO Codes of countries to show. Defaults to showing the inbuilt list of all countries.
@@ -177,7 +172,7 @@ class IntlPhoneField extends StatefulWidget {
   /// Icon of the drop down button.
   ///
   /// Default is [Icon(Icons.arrow_drop_down)]
-  final Icon dropdownIcon;
+  final Widget dropdownIcon;
 
   /// Whether this text field should focus itself if nothing else is already focused.
   final bool autofocus;
@@ -308,20 +303,14 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
     if (widget.initialCountryCode == null && number.startsWith('+')) {
       number = number.substring(1);
       // parse initial value
-      _selectedCountry = countries.firstWhere((country) => number.startsWith(country.fullCountryCode), orElse: () => _countryList.first);
-
-      // remove country code from the initial number value
-      number = number.replaceFirst(RegExp("^${_selectedCountry.fullCountryCode}"), "");
+      _selectedCountry = countries.firstWhere(
+          (country) => number.startsWith(country.dialCode),
+          orElse: () => _countryList.first);
+      number = number.substring(_selectedCountry.dialCode.length);
     } else {
-      _selectedCountry =
-          _countryList.firstWhere((item) => item.code == (widget.initialCountryCode ?? 'US'), orElse: () => _countryList.first);
-
-      // remove country code from the initial number value
-      if(number.startsWith('+')){
-        number = number.replaceFirst(RegExp("^\\+${_selectedCountry.fullCountryCode}"), "");
-      }else{
-        number = number.replaceFirst(RegExp("^${_selectedCountry.fullCountryCode}"), "");
-      }
+      _selectedCountry = _countryList.firstWhere(
+          (item) => item.code == (widget.initialCountryCode ?? 'US'),
+          orElse: () => _countryList.first);
     }
 
     if (widget.autovalidateMode == AutovalidateMode.always) {
@@ -392,7 +381,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         widget.onSaved?.call(
           PhoneNumber(
             countryISOCode: _selectedCountry.code,
-            countryCode: '+${_selectedCountry.dialCode}${_selectedCountry.regionCode}',
+            countryCode: '+${_selectedCountry.dialCode}',
             number: value!,
           ),
         );
@@ -400,7 +389,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
       onChanged: (value) async {
         final phoneNumber = PhoneNumber(
           countryISOCode: _selectedCountry.code,
-          countryCode: '+${_selectedCountry.fullCountryCode}',
+          countryCode: '+${_selectedCountry.dialCode}',
           number: value,
         );
 
